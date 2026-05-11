@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Applications</h1>
+    <p class="page-subtitle">Welcome back, {{ current_user.First_Name }}</p>
+  </div>
+  <a href="{{ url_for('students.new_application') }}" class="btn btn-primary">+ Add Application</a>
+</div>
+
+<!-- Stats strip -->
+<div class="stat-strip">
+  <div class="stat-box">
+    <div class="stat-number">{{ stats.total }}</div>
+    <div class="stat-label">Total</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-number">{{ stats.active }}</div>
+    <div class="stat-label">Active</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-number">{{ stats.interviewing }}</div>
+    <div class="stat-label">Interviewing</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-number">{{ stats.offered }}</div>
+    <div class="stat-label">Offers</div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <label for="filter-status">Status</label>
+  <select id="filter-status">
+    <option value="">All</option>
+    <option value="Applied">Applied</option>
+    <option value="Interviewing">Interviewing</option>
+    <option value="Offered">Offered</option>
+    <option value="Rejected">Rejected</option>
+  </select>
+
+  <label for="filter-source">Source</label>
+  <select id="filter-source">
+    <option value="">All</option>
+    <option value="Internal">Internal</option>
+    <option value="External">External</option>
+  </select>
+
+  <label for="filter-deadline-from">Deadline From</label>
+  <input type="date" id="filter-deadline-from">
+
+  <label for="filter-deadline-to">To</label>
+  <input type="date" id="filter-deadline-to">
+
+  <button class="filter-reset" id="filter-reset">Reset</button>
+</div>
+
+<!-- Applications table -->
+{% if applications %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Company</th>
+      <th>Job Title</th>
+      <th>Status</th>
+      <th>Source</th>
+      <th>Applied</th>
+      <th>Deadline</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for app in applications %}
+    {% set deadline_str = app.Deadline.isoformat() if app.Deadline else '' %}
+    {% set is_urgent = app.Deadline and app.Deadline <= threshold and app.Status not in ('Offered','Rejected') %}
+    <tr class="app-row"
+        data-status="{{ app.Status }}"
+        data-source="{{ app.Source }}"
+        data-deadline="{{ deadline_str }}">
+      <td class="mono">{{ loop.index }}</td>
+      <td><strong>{{ app.Company_Name }}</strong></td>
+      <td>{{ app.Job_Title }}</td>
+      <td><span class="badge badge-{{ app.Status | lower }}">{{ app.Status }}</span></td>
+      <td class="mono">{{ app.Source }}</td>
+      <td class="mono">{{ app.Date_Applied.strftime('%m/%d/%Y') if app.Date_Applied else '—' }}</td>
+      <td class="mono {% if is_urgent %}deadline-urgent{% endif %}">
+        {{ app.Deadline.strftime('%m/%d/%Y') if app.Deadline else '—' }}
+      </td>
+      <td>
+        <a href="{{ url_for('students.edit_application', app_id=app.ApplicationID) }}" class="btn btn-ghost btn-sm">Edit</a>
+        <form method="POST" action="{{ url_for('students.delete_application', app_id=app.ApplicationID) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Delete this application?')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="table-empty" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+  No applications yet. <a href="{{ url_for('students.new_application') }}">Add your first one.</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}My Postings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">My Postings</h1>
+  <a href="{{ url_for('employers.post_job') }}" class="btn btn-outline">+ Post a Job</a>
+</div>
+
+{% if postings %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Job Title</th>
+      <th>Company</th>
+      <th>Location</th>
+      <th>Salary</th>
+      <th>Deadline</th>
+      <th>Applications</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for posting in postings %}
+    <tr>
+      <td><strong>{{ posting.Job_Title }}</strong></td>
+      <td>{{ posting.Company_Name }}</td>
+      <td class="mono">{{ posting.Location_Type }}</td>
+      <td class="mono">{{ posting.Salary_Range }}</td>
+      <td class="mono">{{ posting.Application_Deadline.strftime('%m/%d/%Y') if posting.Application_Deadline else '—' }}</td>
+      <td class="mono">{{ posting.Application_Count }}</td>
+      <td>
+        <span class="badge badge-{{ posting.Posting_Status | lower }} posting-badge">
+          {{ posting.Posting_Status }}
+        </span>
+      </td>
+      <td>
+        <button class="btn btn-ghost btn-sm toggle-status" data-id="{{ posting.PostingID }}">
+          {{ 'Close' if posting.Posting_Status == 'Active' else 'Reopen' }}
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="table-empty" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+  No job postings yet. <a href="{{ url_for('employers.post_job') }}">Post your first job.</a>
+</div>
+{% endif %}
+{% endblock %}

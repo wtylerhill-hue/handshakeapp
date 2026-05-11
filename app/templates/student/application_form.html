@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if edit else 'New' }} Application{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{{ 'Edit Application' if edit else 'New Application' }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST"
+        action="{{ url_for('students.update_application', app_id=app.ApplicationID) if edit else url_for('students.create_application') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="source">Source</label>
+        <select class="form-control" id="source" name="source" required>
+          <option value="Internal" {% if app and app.Source == 'Internal' %}selected{% endif %}>Internal</option>
+          <option value="External" {% if app and app.Source == 'External' %}selected{% endif %}>External</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="status">Status</label>
+        <select class="form-control" id="status" name="status" required>
+          {% for s in ['Applied','Interviewing','Offered','Rejected'] %}
+          <option value="{{ s }}" {% if app and app.Status == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- External: company name -->
+    <div class="form-group" id="external-company-group">
+      <label class="form-label" for="external_company">Company Name</label>
+      <input class="form-control" type="text" id="external_company" name="external_company"
+             value="{{ app.External_Company if app and app.External_Company else '' }}"
+             placeholder="e.g. Google">
+    </div>
+
+    <!-- Internal: job posting select -->
+    <div class="form-group" id="posting-group">
+      <label class="form-label" for="posting_id">Job Posting</label>
+      <select class="form-control" id="posting_id" name="posting_id">
+        <option value="">— Select a posting —</option>
+        {% for p in postings %}
+        <option value="{{ p.PostingID }}"
+                {% if app and app.PostingID == p.PostingID %}selected{% endif %}>
+          {{ p.Label }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="date_applied">Date Applied</label>
+        <input class="form-control" type="date" id="date_applied" name="date_applied" required
+               value="{{ app.Date_Applied.isoformat() if app and app.Date_Applied else '' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="deadline">Deadline <span style="font-weight:300">(optional)</span></label>
+        <input class="form-control" type="date" id="deadline" name="deadline"
+               value="{{ app.Deadline.isoformat() if app and app.Deadline else '' }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="notes">Notes <span style="font-weight:300">(optional)</span></label>
+      <textarea class="form-control" id="notes" name="notes" rows="3"
+                placeholder="Interview notes, follow-up reminders…">{{ app.Notes if app and app.Notes else '' }}</textarea>
+    </div>
+
+    {% if documents %}
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="resume_id">Link Resume <span style="font-weight:300">(optional)</span></label>
+        <select class="form-control" id="resume_id" name="resume_id">
+          <option value="">— None —</option>
+          {% for doc in documents if doc.Document_Type == 'Resume' %}
+          <option value="{{ doc.DocumentID }}">{{ doc.File_Label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="cover_letter_id">Link Cover Letter <span style="font-weight:300">(optional)</span></label>
+        <select class="form-control" id="cover_letter_id" name="cover_letter_id">
+          <option value="">— None —</option>
+          {% for doc in documents if doc.Document_Type == 'Cover Letter' %}
+          <option value="{{ doc.DocumentID }}">{{ doc.File_Label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{{ 'Save Changes' if edit else 'Save Application' }}</button>
+      <a href="{{ url_for('students.dashboard') }}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

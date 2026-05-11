@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Student Lookup{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Student Lookup</h1>
+</div>
+
+<!-- Search -->
+<div class="student-search-wrap">
+  <input type="text" id="student-search" class="student-search"
+         placeholder="Search by name or email…" autocomplete="off">
+  <div id="student-dropdown" class="student-dropdown"></div>
+</div>
+
+<!-- Student detail panel -->
+<div id="student-panel">
+  <div class="advisor-placeholder">
+    <div class="advisor-placeholder-icon">&#128269;</div>
+    <p>Search for a student above to view their profile and application history.</p>
+  </div>
+</div>
+
+<div class="ferpa-note">
+  &#9888; FERPA Notice: Student records displayed here are protected under the Family Educational Rights and Privacy Act.
+  Access is restricted to authorized advisors for legitimate educational purposes only.
+</div>
+{% endblock %}

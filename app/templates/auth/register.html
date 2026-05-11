@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — Handshake AMH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="auth-card" style="max-width:520px;">
+    <div class="auth-logo">Application Management Hub</div>
+    <div class="auth-subtitle">Georgia College &amp; State University</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.register_post') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="first_name">First Name</label>
+          <input class="form-control" type="text" id="first_name" name="first_name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="last_name">Last Name</label>
+          <input class="form-control" type="text" id="last_name" name="last_name" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <input class="form-control" type="email" id="email" name="email" required autocomplete="email">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-control" type="password" id="password" name="password" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="confirm_password">Confirm Password</label>
+          <input class="form-control" type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="role">Role</label>
+        <select class="form-control" id="role" name="role" required>
+          <option value="">Select role…</option>
+          <option value="Student">Student</option>
+          <option value="Advisor">Advisor</option>
+          <option value="Employer">Employer</option>
+        </select>
+      </div>
+
+      <!-- Student fields -->
+      <div id="student-fields" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="major">Major</label>
+            <input class="form-control" type="text" id="major" name="major" placeholder="e.g. MIS">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="graduation_year">Graduation Year</label>
+            <input class="form-control" type="number" id="graduation_year" name="graduation_year"
+                   min="2020" max="2035" placeholder="2026">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="skills">Skills <span style="font-weight:300">(comma-separated)</span></label>
+          <input class="form-control" type="text" id="skills" name="skills" placeholder="SQL, Python, Tableau">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="location_preference">Location Preference</label>
+            <input class="form-control" type="text" id="location_preference" name="location_preference" placeholder="Remote, Atlanta, etc.">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="job_type_preference">Job Type Preference</label>
+            <input class="form-control" type="text" id="job_type_preference" name="job_type_preference" placeholder="Full-time, Internship">
+          </div>
+        </div>
+      </div>
+
+      <!-- Advisor fields -->
+      <div id="advisor-fields" style="display:none;">
+        <div class="form-group">
+          <label class="form-label" for="department">Department</label>
+          <input class="form-control" type="text" id="department" name="department" placeholder="e.g. Career Center">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;">Create Account</button>
+    </form>
+
+    <div class="auth-divider">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Sign In</a>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

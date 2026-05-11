@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Document Library{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Document Library</h1>
+</div>
+
+<!-- Upload zone visual -->
+<div class="upload-zone">
+  <span class="upload-zone-label">Add Document</span>
+  <p>Fill in the form below to track a resume, cover letter, or other document.</p>
+</div>
+
+<!-- Upload form -->
+<div class="form-card" style="margin-bottom:32px;">
+  <form method="POST" action="{{ url_for('students.upload_document') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="document_type">Document Type</label>
+        <select class="form-control" id="document_type" name="document_type" required>
+          <option value="">Select…</option>
+          <option value="Resume">Resume</option>
+          <option value="Cover Letter">Cover Letter</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="version_number">Version</label>
+        <input class="form-control" type="number" id="version_number" name="version_number"
+               value="1" min="1" max="99">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="file_label">File Label</label>
+      <input class="form-control" type="text" id="file_label" name="file_label"
+             required placeholder="e.g. Resume_Deloitte_v2">
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Add Document</button>
+    </div>
+  </form>
+</div>
+
+<!-- Filter tabs -->
+<div class="tab-bar" style="border-bottom:none;margin-bottom:12px;">
+  <button class="tab-btn doc-tab active" data-type="">All</button>
+  <button class="tab-btn doc-tab" data-type="Resume">Resume</button>
+  <button class="tab-btn doc-tab" data-type="Cover Letter">Cover Letter</button>
+  <button class="tab-btn doc-tab" data-type="Other">Other</button>
+</div>
+
+{% if documents %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>File Label</th>
+      <th>Version</th>
+      <th>Upload Date</th>
+      <th>Linked To</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in documents %}
+    {% set badge_class = 'resume' if doc.Document_Type == 'Resume' else ('cover-letter' if doc.Document_Type == 'Cover Letter' else 'other') %}
+    <tr class="doc-row" data-type="{{ doc.Document_Type }}">
+      <td><span class="badge badge-{{ badge_class }}">{{ doc.Document_Type }}</span></td>
+      <td>{{ doc.File_Label }}</td>
+      <td class="mono">v{{ doc.Version_Number }}</td>
+      <td class="mono">{{ doc.Upload_Date.strftime('%m/%d/%Y') if doc.Upload_Date else '—' }}</td>
+      <td>{{ doc.Linked_Company or '—' }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('students.delete_document', doc_id=doc.DocumentID) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Delete this document?')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="table-empty" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+  No documents yet. Add one above.
+</div>
+{% endif %}
+{% endblock %}

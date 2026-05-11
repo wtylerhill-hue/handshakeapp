@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Post a Job{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Post a Job</h1>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar">
+  <div class="progress-step" id="step-1-wrap">
+    <span class="step-dot" id="step-1">1</span>
+    <span class="step-label">Contact Info</span>
+  </div>
+  <div class="progress-step" id="step-2-wrap">
+    <span class="step-dot" id="step-2">2</span>
+    <span class="step-label">Job Details</span>
+  </div>
+  <div class="progress-step" id="step-3-wrap">
+    <span class="step-dot" id="step-3">3</span>
+    <span class="step-label">Submit</span>
+  </div>
+</div>
+
+<form method="POST" action="{{ url_for('employers.create_posting') }}" id="post-job-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <!-- Panel 1: Contact info -->
+  <div class="panel" style="margin-bottom:20px;">
+    <div class="panel-header">
+      <span class="panel-title">Contact Information</span>
+    </div>
+    <div class="panel-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="company_name">Company Name</label>
+          <input class="form-control" type="text" id="company_name" name="company_name"
+                 required placeholder="e.g. Lockheed Martin">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact_name">Contact Name</label>
+          <input class="form-control" type="text" id="contact_name" name="contact_name"
+                 required placeholder="Hiring manager name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="contact_email">Contact Email</label>
+          <input class="form-control" type="email" id="contact_email" name="contact_email"
+                 required placeholder="hr@company.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact_phone">Contact Phone <span style="font-weight:300">(optional)</span></label>
+          <input class="form-control" type="tel" id="contact_phone" name="contact_phone"
+                 placeholder="555-000-0000">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 2: Job details -->
+  <div class="panel" style="margin-bottom:20px;">
+    <div class="panel-header">
+      <span class="panel-title">Job Details</span>
+    </div>
+    <div class="panel-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="job_title">Job Title</label>
+          <input class="form-control" type="text" id="job_title" name="job_title"
+                 required placeholder="e.g. Data Analyst">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="location_type">Location Type</label>
+          <select class="form-control" id="location_type" name="location_type" required>
+            <option value="">Select…</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="In-Person">In-Person</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="salary_range">Salary Range</label>
+          <input class="form-control" type="text" id="salary_range" name="salary_range"
+                 required placeholder="e.g. $60,000–$75,000">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="application_deadline">Application Deadline</label>
+          <input class="form-control" type="date" id="application_deadline" name="application_deadline" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="description">Job Description</label>
+        <textarea class="form-control" id="description" name="description" rows="4"
+                  required placeholder="Describe the role, responsibilities, and team…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="required_qualifications">Required Qualifications</label>
+        <textarea class="form-control" id="required_qualifications" name="required_qualifications" rows="3"
+                  required placeholder="Degree requirements, skills, experience level…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" id="submit-btn" class="btn btn-primary" disabled>Post Job</button>
+    <a href="{{ url_for('employers.my_postings') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}
